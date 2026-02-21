@@ -74,12 +74,16 @@ nav {
 }
 
 .nav-logo {
-  font-family: 'Geist Mono', monospace;
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  color: var(--ink);
+  display: flex;
+  align-items: center;
   text-decoration: none;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.nav-logo svg {
+  height: 28px;
+  width: auto;
+  display: block;
 }
 
 .nav-center {
@@ -125,13 +129,13 @@ nav {
   flex-shrink: 0;
 }
 .theme-toggle:hover { color: var(--ink); }
-.theme-toggle svg { width: 15px; height: 15px; display: block; }
+.theme-toggle svg { width: 15px; height: 15px; }
 
 /* dark mode → show sun; light mode → show moon */
-.icon-moon { display: none; }
-.icon-sun  { display: block; }
-[data-theme="light"] .icon-moon { display: block; }
-[data-theme="light"] .icon-sun  { display: none; }
+.theme-toggle .icon-moon { display: none; }
+.theme-toggle .icon-sun  { display: block; }
+[data-theme="light"] .theme-toggle .icon-moon { display: block; }
+[data-theme="light"] .theme-toggle .icon-sun  { display: none; }
 
 .hamburger {
   display: none;
@@ -773,6 +777,7 @@ footer {
   .mobile-menu a:last-child { border-bottom: none; }
   .mobile-menu a:hover { color: var(--ink); }
 
+  .nav-logo svg { height: 22px; }
   .hero { padding: 56px 24px 64px; }
   .hero-orb { width: min(300px, 70vw); right: 5%; opacity: 0.6; }
   .hero-foot { flex-direction: column; align-items: flex-start; gap: 32px; }
@@ -819,7 +824,22 @@ footer {
 
 <!-- NAV -->
 <nav id="nav">
-  <a href="/" class="nav-logo">Circulith</a>
+  <a href="/" class="nav-logo">
+    <svg viewBox="0 0 1565 417" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g clip-path="url(#nc)">
+        <mask id="nm" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="1565" height="417">
+          <path d="M1565 0H0V417H1565V0Z" fill="white"/>
+          <path d="M1565 196.772H0V220.228H1565V196.772Z" fill="black"/>
+        </mask>
+        <g mask="url(#nm)">
+          <path d="M326.042 351.844C405.272 351.844 469.5 287.667 469.5 208.5C469.5 129.333 405.272 65.1562 326.042 65.1562C246.812 65.1562 182.583 129.333 182.583 208.5C182.583 287.667 246.812 351.844 326.042 351.844Z" stroke="var(--green)" stroke-width="26"/>
+          <path d="M326.042 286.688C369.258 286.688 404.292 251.682 404.292 208.5C404.292 165.318 369.258 130.312 326.042 130.312C282.825 130.312 247.792 165.318 247.792 208.5C247.792 251.682 282.825 286.688 326.042 286.688Z" stroke="var(--green)" stroke-width="18"/>
+          <path d="M577 285C573.2 285 569.7 284.05 566.5 282.15C563.4 280.25 560.9 277.75 559 274.65C557.1 271.45 556.15 267.95 556.15 264.15V197.85C556.15 194.05 557.1 190.6 559 187.5C560.9 184.3 563.4 181.75 566.5 179.85C569.7 177.95 573.2 177 577 177H663.85V196.95H581.2C579.6 196.95 578.3 197.4 577.3 198.3C576.4 199.2 575.95 200.5 575.95 202.2V259.8C575.95 261.4 576.4 262.7 577.3 263.7C578.3 264.6 579.6 265.05 581.2 265.05H663.85V285H577ZM677.39 285V177H697.04V285H677.39ZM797.67 285L765.12 246.15H791.07L819.27 279.45V285H797.67ZM711.57 285V177.15H798.57C802.37 177.15 805.87 178.1 809.07 180C812.27 181.9 814.82 184.45 816.72 187.65C818.62 190.75 819.57 194.2 819.57 198V227.1C819.57 230.9 818.62 234.4 816.72 237.6C814.82 240.8 812.27 243.35 809.07 245.25C805.87 247.05 802.37 247.95 798.57 247.95L731.37 248.1V285H711.57ZM733.17 228H797.67C798.17 228 798.62 227.85 799.02 227.55C799.42 227.25 799.62 226.85 799.62 226.35V198.75C799.62 198.25 799.42 197.85 799.02 197.55C798.62 197.15 798.17 196.95 797.67 196.95H733.17C732.67 196.95 732.22 197.15 731.82 197.55C731.52 197.85 731.37 198.25 731.37 198.75V226.35C731.37 226.85 731.52 227.25 731.82 227.55C732.22 227.85 732.67 228 733.17 228ZM856.199 285C852.399 285 848.899 284.05 845.699 282.15C842.599 280.25 840.099 277.75 838.199 274.65C836.299 271.45 835.349 267.95 835.349 264.15V197.85C835.349 194.05 836.299 190.6 838.199 187.5C840.099 184.3 842.599 181.75 845.699 179.85C848.899 177.95 852.399 177 856.199 177H943.049V196.95H860.399C858.799 196.95 857.499 197.4 856.499 198.3C855.599 199.2 855.149 200.5 855.149 202.2V259.8C855.149 261.4 855.599 262.7 856.499 263.7C857.499 264.6 858.799 265.05 860.399 265.05H943.049V285H856.199ZM979.239 285C975.439 285 971.939 284.05 968.739 282.15C965.639 280.25 963.139 277.75 961.239 274.65C959.339 271.45 958.389 267.95 958.389 264.15V177H978.189V263.25C978.189 263.75 978.339 264.2 978.639 264.6C979.039 264.9 979.489 265.05 979.989 265.05H1044.49C1044.99 265.05 1045.44 264.9 1045.84 264.6C1046.24 264.2 1046.44 263.75 1046.44 263.25V177H1066.39V264.15C1066.39 267.95 1065.44 271.45 1063.54 274.65C1061.64 277.75 1059.09 280.25 1055.89 282.15C1052.79 284.05 1049.34 285 1045.54 285H979.239ZM1083.06 285V176.85H1102.86V265.05H1191.06V285H1083.06ZM1197.7 285V177H1217.35V285H1197.7ZM1272.63 285V196.95H1228.53V177H1336.53V196.95H1292.58V285H1272.63ZM1347.9 285V177H1367.7V220.95H1438.5V177H1458.3V285H1438.5V241.05H1367.7V285H1347.9Z" fill="currentColor"/>
+        </g>
+      </g>
+      <defs><clipPath id="nc"><rect width="1565" height="417" fill="white"/></clipPath></defs>
+    </svg>
+  </a>
   <div class="nav-center">
     <a href="#about">Process</a>
     <a href="#outputs">Outputs</a>
