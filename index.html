@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Circulith — Tyre Recycling. Zero Fees.</title>
+<!-- Prevent flash of wrong theme -->
+<script>(function(){var t=localStorage.getItem('circulith-theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── THEME TOKENS ── */
+:root {
+  --bg:      #0d100e;
+  --surface: #141a15;
+  --ink:     #dce9de;
+  --mid:     #7a9080;
+  --faint:   rgba(220,233,222,0.04);
+  --green:   #2bbd6e;
+  --green-l: rgba(43,189,110,0.08);
+  --rule:    rgba(220,233,222,0.08);
+  --nav-bg:  rgba(13,16,14,0.92);
+  --orb-1:   rgba(43,189,110,0.18);
+  --orb-2:   rgba(43,189,110,0.28);
+  --orb-core-a: rgba(43,189,110,0.40);
+  --orb-core-b: rgba(43,189,110,0.08);
+}
+
+[data-theme="light"] {
+  --bg:      #f0f4f1;
+  --surface: #e4eae6;
+  --ink:     #0d100e;
+  --mid:     #4e6a57;
+  --faint:   rgba(13,16,14,0.04);
+  --green:   #189059;
+  --green-l: rgba(24,144,89,0.08);
+  --rule:    rgba(13,16,14,0.10);
+  --nav-bg:  rgba(240,244,241,0.92);
+  --orb-1:   rgba(24,144,89,0.22);
+  --orb-2:   rgba(24,144,89,0.34);
+  --orb-core-a: rgba(24,144,89,0.32);
+  --orb-core-b: rgba(24,144,89,0.04);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Geist Mono', monospace;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  height: 56px;
+  background: var(--nav-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rule);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.nav-logo {
+  font-family: 'Geist Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.nav-center {
+  display: flex;
+  gap: 40px;
+}
+
+.nav-center a {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mid);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-center a:hover { color: var(--ink); }
+
+.nav-btn {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--green);
+  padding-bottom: 2px;
+  transition: color 0.2s;
+}
+.nav-btn:hover { color: var(--green); }
+
+/* Theme toggle */
+.theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--mid);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+.theme-toggle:hover { color: var(--ink); }
+.theme-toggle svg { width: 15px; height: 15px; display: block; }
+
+/* dark mode → show sun; light mode → show moon */
+.icon-moon { display: none; }
+.icon-sun  { display: block; }
+[data-theme="light"] .icon-moon { display: block; }
+[data-theme="light"] .icon-sun  { display: none; }
+
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 5px;
+  padding: 4px;
+}
+.hamburger span {
+  width: 22px;
+  height: 1px;
+  background: var(--ink);
+  display: block;
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 56px 40px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Tyre cross-section diagram */
+.hero-orb {
+  position: absolute;
+  top: 50%;
+  right: 8%;
+  transform: translate(0, -50%);
+  width: min(520px, 55vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid var(--orb-1);
+  box-shadow: 0 0 80px var(--orb-core-b), inset 0 0 80px var(--orb-core-b);
+  pointer-events: none;
+}
+.hero-orb::before {
+  content: '';
+  position: absolute;
+  inset: 18%;
+  border-radius: 50%;
+  border: 1px solid var(--orb-2);
+}
+.hero-orb::after {
+  content: '';
+  position: absolute;
+  inset: 40%;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--orb-core-a) 0%, var(--orb-core-b) 60%, transparent 100%);
+  animation: breathe 6s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(0.85); opacity: 0.5; }
+  50%       { transform: scale(1.15); opacity: 1; }
+}
+
+.hero-content { position: relative; z-index: 1; }
+
+.hero-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.hero-eyebrow::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: var(--green);
+  display: block;
+}
+
+.hero-h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: clamp(64px, 10vw, 160px);
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--ink);
+  max-width: 14ch;
+}
+.hero-h1 em {
+  font-style: normal;
+  font-weight: 800;
+  color: var(--green);
+}
+
+.hero-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 64px;
+  padding-top: 40px;
+  border-top: 1px solid var(--rule);
+}
+
+.hero-sub {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--mid);
+  max-width: 38ch;
+}
+
+.hero-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.cta-primary {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--green);
+  padding: 14px 32px;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.25s, color 0.25s;
+}
+.cta-primary:hover { background: var(--ink); color: var(--bg); }
+
+.cta-secondary {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mid);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s;
+}
+.cta-secondary:hover { color: var(--ink); }
+
+.scroll-cue {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 1;
+  animation: descend 2.4s ease-in-out infinite;
+}
+.scroll-cue span {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mid);
+  opacity: 0.5;
+}
+.scroll-cue svg {
+  width: 14px;
+  height: 14px;
+  stroke: var(--mid);
+  opacity: 0.4;
+}
+@keyframes descend {
+  0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.5; }
+  60%       { transform: translateX(-50%) translateY(6px); opacity: 1; }
+}
+
+/* ── NUMBERS BAR ── */
+.numbers-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface);
+}
+
+.num-item {
+  padding: 48px 40px;
+  border-right: 1px solid var(--rule);
+  transition: background 0.3s;
+}
+.num-item:last-child { border-right: none; }
+.num-item:hover { background: var(--faint); }
+
+.num-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: clamp(48px, 5.5vw, 80px);
+  color: var(--ink);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+.num-val .unit {
+  font-size: 0.5em;
+  font-weight: 700;
+  color: var(--green);
+  vertical-align: super;
+}
+
+.num-lbl {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-top: 12px;
+}
+
+/* ── ABOUT ── */
+.section-about {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--rule);
+}
+
+.about-left {
+  padding: 120px 40px;
+  border-right: 1px solid var(--rule);
+}
+
+.section-tag {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 48px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-tag::before {
+  content: attr(data-n);
+  color: var(--green);
+}
+
+.about-h2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: clamp(32px, 3.5vw, 56px);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 40px;
+}
+.about-h2 em {
+  font-style: normal;
+  font-weight: 400;
+  color: var(--green);
+}
+
+.about-body {
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--mid);
+  max-width: 44ch;
+}
+.about-body + .about-body { margin-top: 24px; }
+
+.about-right {
+  padding: 120px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.process-list { list-style: none; }
+
+.process-item {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 24px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--rule);
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  transition: padding-left 0.3s;
+}
+.process-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--green);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+.process-item:hover::before { transform: scaleY(1); }
+.process-item:hover { padding-left: 12px; }
+.process-item:last-child { border-bottom: none; }
+
+.pi-n {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--mid);
+  padding-top: 3px;
+}
+
+.pi-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.pi-text {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--mid);
+}
+
+/* ── OUTPUTS ── */
+.section-outputs {
+  border-bottom: 1px solid var(--rule);
+  padding: 120px 40px;
+}
+
+.outputs-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 72px;
+}
+
+.outputs-h2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: clamp(40px, 5vw, 80px);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--ink);
+  line-height: 0.95;
+}
+.outputs-h2 em { font-style: normal; font-weight: 400; color: var(--green); }
+
+.outputs-note {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--mid);
+  max-width: 28ch;
+  line-height: 1.6;
+  text-align: right;
+}
+
+.outputs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--rule);
+}
+
+.output-card {
+  background: var(--surface);
+  padding: 48px 40px;
+  position: relative;
+  overflow: hidden;
+  border-top: 2px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
+}
+.output-card:hover {
+  border-top-color: var(--green);
+  background: var(--green-l);
+}
+
+.oc-yield {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: clamp(40px, 4.5vw, 72px);
+  letter-spacing: -0.01em;
+  line-height: 1;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.oc-unit {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--mid);
+  margin-bottom: 32px;
+}
+.oc-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.oc-use {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--mid);
+}
+
+/* ── WHY ── */
+.section-why {
+  border-bottom: 1px solid var(--rule);
+}
+
+.why-top {
+  padding: 80px 40px 60px;
+  border-bottom: 1px solid var(--rule);
+}
+.why-top .section-tag { margin-bottom: 32px; }
+.why-h2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: clamp(36px, 5vw, 80px);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--ink);
+  line-height: 1.0;
+  max-width: 22ch;
+}
+.why-h2 em { font-style: normal; font-weight: 400; color: var(--green); }
+
+.why-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+  padding: 40px 40px;
+  border-bottom: 1px solid var(--rule);
+  transition: background 0.2s;
+}
+.why-row:last-child { border-bottom: none; }
+.why-row:hover { background: var(--faint); }
+
+.why-n {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--mid);
+  padding-top: 4px;
+}
+.why-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  text-transform: uppercase;
+  color: var(--ink);
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+}
+.why-body {
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--mid);
+}
+
+/* ── CTA ── */
+.section-cta {
+  padding: 160px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface);
+}
+
+.cta-h2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: clamp(48px, 7vw, 120px);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--ink);
+  line-height: 0.9;
+  margin-bottom: 48px;
+  max-width: 14ch;
+}
+.cta-h2 em { font-style: normal; font-weight: 800; color: var(--green); }
+
+.cta-sub {
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--mid);
+  max-width: 44ch;
+  margin-bottom: 56px;
+}
+
+.cta-email-line {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--rule);
+  overflow: hidden;
+  width: 100%;
+  max-width: 480px;
+}
+
+.cta-email-link {
+  flex: 1;
+  padding: 18px 24px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--mid);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.cta-email-link:hover { color: var(--ink); }
+
+.cta-email-btn {
+  padding: 18px 28px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--green);
+  text-decoration: none;
+  white-space: nowrap;
+  border-left: 1px solid var(--rule);
+  transition: background 0.25s;
+}
+.cta-email-btn:hover { background: var(--ink); }
+
+/* ── FOOTER ── */
+footer {
+  padding: 64px 40px 40px;
+}
+
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 64px;
+  border-bottom: 1px solid var(--rule);
+  gap: 48px;
+}
+
+.footer-logo svg {
+  width: 240px;
+  height: auto;
+  display: block;
+}
+
+.footer-tagline {
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--mid);
+  margin-top: 16px;
+  font-weight: 300;
+}
+
+.footer-links {
+  display: flex;
+  gap: 80px;
+}
+
+.footer-col-h {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 20px;
+  opacity: 0.6;
+}
+.footer-col a {
+  display: block;
+  font-size: 12px;
+  color: var(--mid);
+  text-decoration: none;
+  line-height: 2.2;
+  transition: color 0.2s;
+}
+.footer-col a:hover { color: var(--ink); }
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer-bottom span {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--mid);
+  opacity: 0.5;
+}
+
+/* ── REVEAL ANIMATIONS ── */
+.r {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.r.visible { opacity: 1; transform: none; }
+.r-d1 { transition-delay: 0.08s; }
+.r-d2 { transition-delay: 0.16s; }
+.r-d3 { transition-delay: 0.24s; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 960px) {
+  nav { padding: 0 24px; }
+  .nav-center { display: none; }
+  .nav-btn { display: none; }
+  .hamburger { display: flex; }
+
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    inset: 56px 0 0 0;
+    background: var(--bg);
+    border-top: 1px solid var(--rule);
+    z-index: 99;
+    padding: 40px 24px;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a {
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mid);
+    text-decoration: none;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rule);
+    transition: color 0.2s;
+  }
+  .mobile-menu a:last-child { border-bottom: none; }
+  .mobile-menu a:hover { color: var(--ink); }
+
+  .hero { padding: 56px 24px 64px; }
+  .hero-orb { width: min(300px, 70vw); right: 5%; opacity: 0.6; }
+  .hero-foot { flex-direction: column; align-items: flex-start; gap: 32px; }
+  .hero-cta { align-items: flex-start; }
+  .scroll-cue { display: none; }
+
+  .numbers-bar { grid-template-columns: 1fr; }
+  .num-item { border-right: none; border-bottom: 1px solid var(--rule); }
+  .num-item:last-child { border-bottom: none; }
+
+  .section-about { grid-template-columns: 1fr; }
+  .about-left { border-right: none; border-bottom: 1px solid var(--rule); padding: 80px 24px; }
+  .about-right { padding: 80px 24px; }
+
+  .section-outputs { padding: 80px 24px; }
+  .outputs-head { flex-direction: column; gap: 16px; }
+  .outputs-note { text-align: left; max-width: 100%; }
+  .outputs-grid { grid-template-columns: 1fr; }
+
+  .why-top { padding: 60px 24px 48px; }
+  .why-row { grid-template-columns: 40px 1fr; gap: 20px; padding: 32px 24px; }
+  .why-body { grid-column: 2; }
+
+  .section-cta { padding: 100px 24px; }
+  .cta-email-line { flex-direction: column; }
+  .cta-email-link { border-bottom: 1px solid var(--rule); }
+  .cta-email-btn { border-left: none; border-top: 1px solid var(--rule); text-align: center; }
+
+  footer { padding: 48px 24px 32px; }
+  .footer-top { flex-direction: column; }
+  .footer-links { gap: 40px; flex-wrap: wrap; }
+  .footer-bottom { flex-direction: column; gap: 8px; }
+}
+
+@media (max-width: 480px) {
+  .hero-h1 { font-size: 60px; }
+  .footer-links { flex-direction: column; gap: 32px; }
+  .why-row { grid-template-columns: 1fr; gap: 12px; }
+  .why-n { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="/" class="nav-logo">Circulith</a>
+  <div class="nav-center">
+    <a href="#about">Process</a>
+    <a href="#outputs">Outputs</a>
+    <a href="#why">Why us</a>
+  </div>
+  <a href="#contact" class="nav-btn">Partner with us</a>
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" onclick="toggleTheme()">
+    <!-- Sun: shown in dark mode — click to go light -->
+    <svg class="icon-sun" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.2"/>
+      <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>
+    <!-- Moon: shown in light mode — click to go dark -->
+    <svg class="icon-moon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M13.5 10.5A6 6 0 0 1 5.5 2.5a6 6 0 1 0 8 8z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <button class="hamburger" id="hb" aria-label="Open menu" onclick="toggleNav()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#about" onclick="toggleNav()">Process</a>
+  <a href="#outputs" onclick="toggleNav()">Outputs</a>
+  <a href="#why" onclick="toggleNav()">Why us</a>
+  <a href="#contact" onclick="toggleNav()">Partner with us</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-orb"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Luxembourg & Greater Region</div>
+    <h1 class="hero-h1">
+      Tyre recycling,<br>
+      <em>zero</em> fees.
+    </h1>
+
+    <div class="hero-foot">
+      <p class="hero-sub">We collect your end-of-life tyres and process them through pyrolysis — converting waste into recovered materials. You pay nothing. We handle everything.</p>
+      <div class="hero-cta">
+        <a href="#contact" class="cta-primary">Partner with us</a>
+        <a href="#about" class="cta-secondary">
+          How it works
+          <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 2v10M2 7l5 5 5-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-cue">
+    <span>Scroll</span>
+    <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M7 2v10M2 7l5 5 5-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+</section>
+
+<!-- NUMBERS -->
+<div class="numbers-bar">
+  <div class="num-item r">
+    <div class="num-val" data-target="0" data-suffix="€"><span class="unit">€</span>0</div>
+    <div class="num-lbl">Recycling fee — always</div>
+  </div>
+  <div class="num-item r r-d1">
+    <div class="num-val" data-target="100" data-suffix="%">100<span class="unit">%</span></div>
+    <div class="num-lbl">Of every tyre recovered</div>
+  </div>
+  <div class="num-item r r-d2">
+    <div class="num-val" data-target="3">3</div>
+    <div class="num-lbl">Recovered output streams</div>
+  </div>
+</div>
+
+<!-- ABOUT + PROCESS -->
+<section class="section-about" id="about">
+  <div class="about-left">
+    <div class="section-tag r" data-n="01">About</div>
+    <h2 class="about-h2 r r-d1">Built for the<br>Greater Region.<br><em>Built to last.</em></h2>
+    <p class="about-body r r-d2">Circulith is a Luxembourg-based industrial processor. We use pyrolysis — a thermochemical process in a sealed, oxygen-free reactor — to break down end-of-life tyres into three usable materials.</p>
+    <p class="about-body r r-d2">The economics are simple: those recovered materials have industrial market value. That value funds our operations. Which is why we can collect and process your tyres at zero cost to you.</p>
+  </div>
+  <div class="about-right">
+    <div class="section-tag r" data-n="02">Process</div>
+    <ul class="process-list r r-d1">
+      <li class="process-item">
+        <span class="pi-n">01</span>
+        <div class="pi-body">
+          <div class="pi-title">Collection</div>
+          <div class="pi-text">We pick up end-of-life tyres from your site — free, scheduled, and documented.</div>
+        </div>
+      </li>
+      <li class="process-item">
+        <span class="pi-n">02</span>
+        <div class="pi-body">
+          <div class="pi-title">Shredding</div>
+          <div class="pi-text">Tyres are shredded and separated. Steel wire is extracted immediately at this stage.</div>
+        </div>
+      </li>
+      <li class="process-item">
+        <span class="pi-n">03</span>
+        <div class="pi-body">
+          <div class="pi-title">Pyrolysis</div>
+          <div class="pi-text">Rubber granulate enters a sealed reactor. Heat decomposes it into oil vapour and carbon char. Syngas loops back to power the reactor itself.</div>
+        </div>
+      </li>
+      <li class="process-item">
+        <span class="pi-n">04</span>
+        <div class="pi-body">
+          <div class="pi-title">Recovery & sale</div>
+          <div class="pi-text">Certified carbon black, pyrolysis oil, and steel wire are delivered to industrial buyers. Nothing goes to landfill.</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- OUTPUTS -->
+<section class="section-outputs" id="outputs">
+  <div class="outputs-head r">
+    <h2 class="outputs-h2">Three outputs,<br><em>one tyre.</em></h2>
+    <p class="outputs-note">Approximate recovery per metric tonne of processed tyres.</p>
+  </div>
+
+  <div class="outputs-grid">
+    <div class="output-card r">
+      <div class="oc-yield">~380</div>
+      <div class="oc-unit">kg per tonne</div>
+      <div class="oc-name">Recovered Carbon Black</div>
+      <div class="oc-use">Rubber compounding, pigments, plastic filler. ASTM D1765 / REACH compliant.</div>
+    </div>
+    <div class="output-card r r-d1">
+      <div class="oc-yield">~350</div>
+      <div class="oc-unit">litres per tonne</div>
+      <div class="oc-name">Tyre Pyrolysis Oil</div>
+      <div class="oc-use">Industrial fuel oil and refinery feedstock. EN 16640 compliant.</div>
+    </div>
+    <div class="output-card r r-d2">
+      <div class="oc-yield">~150</div>
+      <div class="oc-unit">kg per tonne</div>
+      <div class="oc-name">Steel Wire</div>
+      <div class="oc-use">Scrap grade A/B. Supplied directly to steel mills and construction industry.</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="section-why" id="why">
+  <div class="why-top">
+    <div class="section-tag r" data-n="03">Why Circulith</div>
+    <h2 class="why-h2 r r-d1">The simplest deal<br>in industrial <em>recycling.</em></h2>
+  </div>
+  <div class="why-rows">
+    <div class="why-row r">
+      <span class="why-n">01</span>
+      <div class="why-title">Zero fees. Permanently.</div>
+      <div class="why-body">Our revenue comes entirely from recovered materials. We're not charging you a fee and calling it sustainable — we've built a model where your cost is structurally zero.</div>
+    </div>
+    <div class="why-row r">
+      <span class="why-n">02</span>
+      <div class="why-title">Local by design.</div>
+      <div class="why-body">Based in Luxembourg, operating across the Greater Region. Short transport chains reduce emissions. Accountability is direct — not routed through a distant headquarters.</div>
+    </div>
+    <div class="why-row r">
+      <span class="why-n">03</span>
+      <div class="why-title">Thermally closed.</div>
+      <div class="why-body">Syngas produced during pyrolysis recirculates to fuel the reactor. No external fossil fuel consumed in processing. Every input is utilised; every output has a destination.</div>
+    </div>
+    <div class="why-row r">
+      <span class="why-n">04</span>
+      <div class="why-title">Fully documented.</div>
+      <div class="why-body">Every collection, every batch, every certified output — documented and traceable. EU waste framework compliant. Luxembourg environmental permits in place.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section-cta" id="contact">
+  <h2 class="cta-h2 r">Your tyres.<br>Our <em>process.</em><br>Zero cost.</h2>
+  <p class="cta-sub r r-d1">Fleet operators, tyre dealers, garages — if you generate end-of-life tyres in Luxembourg or the Greater Region, we collect them at no charge.</p>
+  <div class="cta-email-line r r-d2">
+    <a href="mailto:hello@circulith.lu" class="cta-email-link">hello@circulith.lu</a>
+    <a href="mailto:hello@circulith.lu" class="cta-email-btn">Write to us</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">
+        <svg viewBox="0 0 1565 417" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g clip-path="url(#fc)">
+            <mask id="fm" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="1565" height="417">
+              <path d="M1565 0H0V417H1565V0Z" fill="white"/>
+              <path d="M1565 196.772H0V220.228H1565V196.772Z" fill="black"/>
+            </mask>
+            <g mask="url(#fm)">
+              <path d="M326.042 351.844C405.272 351.844 469.5 287.667 469.5 208.5C469.5 129.333 405.272 65.1562 326.042 65.1562C246.812 65.1562 182.583 129.333 182.583 208.5C182.583 287.667 246.812 351.844 326.042 351.844Z" stroke="var(--green)" stroke-width="26"/>
+              <path d="M326.042 286.688C369.258 286.688 404.292 251.682 404.292 208.5C404.292 165.318 369.258 130.312 326.042 130.312C282.825 130.312 247.792 165.318 247.792 208.5C247.792 251.682 282.825 286.688 326.042 286.688Z" stroke="var(--green)" stroke-width="18"/>
+              <path d="M577 285C573.2 285 569.7 284.05 566.5 282.15C563.4 280.25 560.9 277.75 559 274.65C557.1 271.45 556.15 267.95 556.15 264.15V197.85C556.15 194.05 557.1 190.6 559 187.5C560.9 184.3 563.4 181.75 566.5 179.85C569.7 177.95 573.2 177 577 177H663.85V196.95H581.2C579.6 196.95 578.3 197.4 577.3 198.3C576.4 199.2 575.95 200.5 575.95 202.2V259.8C575.95 261.4 576.4 262.7 577.3 263.7C578.3 264.6 579.6 265.05 581.2 265.05H663.85V285H577ZM677.39 285V177H697.04V285H677.39ZM797.67 285L765.12 246.15H791.07L819.27 279.45V285H797.67ZM711.57 285V177.15H798.57C802.37 177.15 805.87 178.1 809.07 180C812.27 181.9 814.82 184.45 816.72 187.65C818.62 190.75 819.57 194.2 819.57 198V227.1C819.57 230.9 818.62 234.4 816.72 237.6C814.82 240.8 812.27 243.35 809.07 245.25C805.87 247.05 802.37 247.95 798.57 247.95L731.37 248.1V285H711.57ZM733.17 228H797.67C798.17 228 798.62 227.85 799.02 227.55C799.42 227.25 799.62 226.85 799.62 226.35V198.75C799.62 198.25 799.42 197.85 799.02 197.55C798.62 197.15 798.17 196.95 797.67 196.95H733.17C732.67 196.95 732.22 197.15 731.82 197.55C731.52 197.85 731.37 198.25 731.37 198.75V226.35C731.37 226.85 731.52 227.25 731.82 227.55C732.22 227.85 732.67 228 733.17 228ZM856.199 285C852.399 285 848.899 284.05 845.699 282.15C842.599 280.25 840.099 277.75 838.199 274.65C836.299 271.45 835.349 267.95 835.349 264.15V197.85C835.349 194.05 836.299 190.6 838.199 187.5C840.099 184.3 842.599 181.75 845.699 179.85C848.899 177.95 852.399 177 856.199 177H943.049V196.95H860.399C858.799 196.95 857.499 197.4 856.499 198.3C855.599 199.2 855.149 200.5 855.149 202.2V259.8C855.149 261.4 855.599 262.7 856.499 263.7C857.499 264.6 858.799 265.05 860.399 265.05H943.049V285H856.199ZM979.239 285C975.439 285 971.939 284.05 968.739 282.15C965.639 280.25 963.139 277.75 961.239 274.65C959.339 271.45 958.389 267.95 958.389 264.15V177H978.189V263.25C978.189 263.75 978.339 264.2 978.639 264.6C979.039 264.9 979.489 265.05 979.989 265.05H1044.49C1044.99 265.05 1045.44 264.9 1045.84 264.6C1046.24 264.2 1046.44 263.75 1046.44 263.25V177H1066.39V264.15C1066.39 267.95 1065.44 271.45 1063.54 274.65C1061.64 277.75 1059.09 280.25 1055.89 282.15C1052.79 284.05 1049.34 285 1045.54 285H979.239ZM1083.06 285V176.85H1102.86V265.05H1191.06V285H1083.06ZM1197.7 285V177H1217.35V285H1197.7ZM1272.63 285V196.95H1228.53V177H1336.53V196.95H1292.58V285H1272.63ZM1347.9 285V177H1367.7V220.95H1438.5V177H1458.3V285H1438.5V241.05H1367.7V285H1347.9Z" fill="currentColor"/>
+            </g>
+          </g>
+          <defs><clipPath id="fc"><rect width="1565" height="417" fill="white"/></clipPath></defs>
+        </svg>
+      </div>
+      <div class="footer-tagline">Pyrolysis tyre recycling. Zero fees.</div>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <div class="footer-col-h">Company</div>
+        <a href="#about">Process</a>
+        <a href="#outputs">Outputs</a>
+        <a href="#why">Why us</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-h">Contact</div>
+        <a href="mailto:hello@circulith.lu">hello@circulith.lu</a>
+        <a href="#">Luxembourg, LU</a>
+        <a href="#">Greater Region</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-h">Legal</div>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Permits</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Circulith S.A.</span>
+    <span>Luxembourg — EU Environmental Framework Compliant</span>
+  </div>
+</footer>
+
+<script>
+// ── THEME ───────────────────────────────────────
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('circulith-theme', next);
+}
+
+// ── MOBILE NAV ──────────────────────────────────
+function toggleNav() {
+  const menu = document.getElementById('mobileMenu');
+  const hb = document.getElementById('hb');
+  const isOpen = menu.classList.toggle('open');
+  const spans = hb.querySelectorAll('span');
+  if (isOpen) {
+    spans[0].style.transform = 'rotate(45deg) translate(4px, 5px)';
+    spans[1].style.opacity = '0';
+    spans[2].style.transform = 'rotate(-45deg) translate(4px, -5px)';
+  } else {
+    spans.forEach(s => { s.style.transform = ''; s.style.opacity = ''; });
+  }
+}
+
+// ── SCROLL REVEAL ──────────────────────────────
+const revealEls = document.querySelectorAll('.r');
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      revealObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -32px 0px' });
+revealEls.forEach(el => revealObs.observe(el));
+
+// ── COUNT-UP NUMBERS ────────────────────────────
+function countUp(el, target, duration = 1200) {
+  const start = performance.now();
+  function frame(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const val = Math.round(eased * target);
+    el.setAttribute('data-current', val);
+    const suffix = el.getAttribute('data-suffix') || '';
+    if (suffix === '%') {
+      el.innerHTML = `${val}<span class="unit">%</span>`;
+    } else if (target === 0) {
+      el.innerHTML = `<span class="unit">€</span>0`;
+    } else {
+      el.innerHTML = val;
+    }
+    if (progress < 1) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+const numItems = document.querySelectorAll('.num-val[data-target]');
+const numObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const target = parseInt(e.target.getAttribute('data-target'));
+      if (target > 0) countUp(e.target, target);
+      numObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+numItems.forEach(el => numObs.observe(el));
+</script>
+</body>
+</html>
